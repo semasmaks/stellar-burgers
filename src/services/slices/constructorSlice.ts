@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { TConstructorIngredient } from '@utils-types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TIngredient } from '@utils-types';
 
 interface IConstructorState {
-  bun: TConstructorIngredient | null;
-  ingredients: TConstructorIngredient[];
+  bun: TIngredient | null;
+  ingredients: TIngredient[];
 }
 
 const initialState: IConstructorState = {
@@ -15,16 +15,19 @@ export const constructorSlice = createSlice({
   name: 'constructorSlice',
   initialState,
   reducers: {
-    setBun: (state, action) => {
+    setBun: (state, action: PayloadAction<TIngredient | null>) => {
       state.bun = action.payload;
     },
-    addIngredient: (state, action) => {
+    addIngredient: (state, action: PayloadAction<TIngredient>) => {
       state.ingredients = [...state.ingredients, action.payload];
     },
-    deleteIngredient: (state, action) => {
+    deleteIngredient: (state, action: PayloadAction<{ index: number }>) => {
       state.ingredients.splice(action.payload.index, 1);
     },
-    moveIngredient: (state, action) => {
+    moveIngredient: (
+      state,
+      action: PayloadAction<{ index: number; direction: number }>
+    ) => {
       const { index, direction } = action.payload;
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= state.ingredients.length) return;
@@ -45,5 +48,3 @@ export const {
   moveIngredient,
   clearConstructor
 } = constructorSlice.actions;
-
-export default constructorSlice.reducer;

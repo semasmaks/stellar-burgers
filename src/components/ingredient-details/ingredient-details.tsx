@@ -1,6 +1,5 @@
 import { FC, useEffect } from 'react';
-import { Preloader } from '@ui';
-import { IngredientDetailsUI } from '@ui';
+import { IngredientDetailsUI, Preloader } from '@ui';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import {
@@ -17,7 +16,7 @@ export const IngredientDetails: FC = () => {
   const { id } = useParams();
   useEffect(() => {
     if (!ingredients.length) dispatch(fetchIngredients());
-    dispatch(setSelectedIngredient({ id: id }));
+    dispatch(setSelectedIngredient(id!));
     return () => {
       dispatch(setSelectedIngredient(null));
     };

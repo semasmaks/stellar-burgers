@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getOrdersApi, orderBurgerApi, TNewOrder } from '@api';
 import { TOrder } from '@utils-types';
 
@@ -24,8 +24,6 @@ export const postOrder = createAsyncThunk(
   'order:post',
   async (data: string[]) => {
     const response = await orderBurgerApi(data);
-    // TODO: удалить лог
-    console.log(response);
     return response.order;
   }
 );
@@ -39,7 +37,7 @@ export const orderSlice = createSlice({
   name: 'orderSlice',
   initialState,
   reducers: {
-    setOrderModalData: (state, action) => {
+    setOrderModalData: (state, action: PayloadAction<TNewOrder | null>) => {
       state.orderModalData = action.payload;
     }
   },

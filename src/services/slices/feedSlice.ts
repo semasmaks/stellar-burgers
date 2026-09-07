@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder } from '@utils-types';
 import { getFeedsApi, getOrderByNumberApi } from '@api';
 
@@ -39,7 +39,7 @@ export const feedSlice = createSlice({
   name: 'feedSlice',
   initialState,
   reducers: {
-    setSelectedOrder: (state, action) => {
+    setSelectedOrder: (state, action: PayloadAction<null | string>) => {
       if (action.payload === null) {
         state.selectedOrder = null;
         return;
@@ -65,8 +65,6 @@ export const feedSlice = createSlice({
         state.feed.total = action.payload.total;
         state.feed.totalToday = action.payload.totalToday;
         state.isInit = true;
-        // TODO: удалить лог
-        // console.log('state', state.orders);
       })
       .addCase(getOrderByNumber.fulfilled, (state, action) => {
         state.selectedOrder = action.payload;

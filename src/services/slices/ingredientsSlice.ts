@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getIngredientsApi } from '@api';
 import { TIngredient } from '@utils-types';
 
@@ -25,13 +25,13 @@ export const ingredientsSlice = createSlice({
   name: 'ingredientsSlice',
   initialState,
   reducers: {
-    setSelectedIngredient: (state, action) => {
+    setSelectedIngredient: (state, action: PayloadAction<string | null>) => {
       if (action.payload === null) {
         state.selectedIngredient = null;
         return;
       }
       const ingredient = state.ingredients.find(
-        (item) => item._id === action.payload.id
+        (item) => item._id === action.payload
       );
       if (ingredient) state.selectedIngredient = ingredient;
     }
