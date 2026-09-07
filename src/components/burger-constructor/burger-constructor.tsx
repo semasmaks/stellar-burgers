@@ -27,6 +27,7 @@ export const BurgerConstructor: FC = () => {
       .unwrap()
       .then(() => {
         dispatch(clearConstructor());
+        setOrderButtonText('Оформить заказ');
       })
       .catch((e) => console.warn(e));
   };
