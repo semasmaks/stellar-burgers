@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
 import { postOrder, setOrderModalData } from '../../services/slices/orderSlice';
@@ -10,14 +10,19 @@ export const BurgerConstructor: FC = () => {
 
   const constructorItems = useSelector((state) => state.constructorSlice);
   const { orderRequest, orderModalData } = useSelector((state) => state.order);
+  const isUserAuth = useSelector((state) => state.user.isUserAuth);
+  const [orderButtonText, setOrderButtonText] = useState('Оформить заказ');
 
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!constructorItems.bun) setOrderButtonText('Выберите булку');
+    if (!isUserAuth) setOrderButtonText('Необходимо авторизоваться');
+    if (!constructorItems.bun || orderRequest || !isUserAuth) return;
     const orderData = [
       constructorItems.bun._id,
       ...constructorItems.ingredients.map((item) => item._id),
       constructorItems.bun._id
     ];
+    setOrderButtonText('Обрабатываем ваш заказ');
     dispatch(postOrder(orderData))
       .unwrap()
       .then(() => {
@@ -25,6 +30,10 @@ export const BurgerConstructor: FC = () => {
       })
       .catch((e) => console.warn(e));
   };
+
+  useEffect(() => {
+    if (constructorItems.bun) setOrderButtonText('Оформить заказ');
+  }, [constructorItems.bun]);
 
   const closeOrderModal = () => {
     dispatch(setOrderModalData(null));
@@ -48,6 +57,7 @@ export const BurgerConstructor: FC = () => {
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      orderButtonText={orderButtonText}
     />
   );
 };

@@ -17,14 +17,14 @@ export type TUser = {
 
 export interface IUserSlice {
   userData: TUser | null;
-  isAuth: boolean;
+  isUserAuth: boolean;
   isUserLoading: boolean;
   error: string | null;
 }
 
 const initialState: IUserSlice = {
   userData: null,
-  isAuth: false,
+  isUserAuth: false,
   isUserLoading: false,
   error: null
 };
@@ -55,7 +55,6 @@ export const logoutUser = createAsyncThunk('user:logout', async () => {
   const res = await logoutApi();
   localStorage.removeItem('refreshToken');
   deleteCookie('accessToken');
-  console.log('logout', res);
   return res;
 });
 
@@ -77,13 +76,13 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUser.rejected, (state) => {
         state.isUserLoading = false;
-        state.isAuth = false;
+        state.isUserAuth = false;
         state.userData = null;
         state.error = 'Не удалось получить данные пользователя';
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.isUserLoading = false;
-        state.isAuth = true;
+        state.isUserAuth = true;
         state.userData = action.payload.user;
       })
       // register
@@ -97,7 +96,7 @@ export const userSlice = createSlice({
       })
       .addCase(regUser.fulfilled, (state, action) => {
         state.isUserLoading = false;
-        state.isAuth = true;
+        state.isUserAuth = true;
         state.userData = action.payload.user;
       })
       // login
@@ -111,7 +110,7 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isUserLoading = false;
-        state.isAuth = true;
+        state.isUserAuth = true;
         state.userData = action.payload.user;
       })
       // logout
@@ -125,7 +124,7 @@ export const userSlice = createSlice({
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isUserLoading = false;
-        state.isAuth = false;
+        state.isUserAuth = false;
         state.userData = null;
       })
       // update

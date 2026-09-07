@@ -21,7 +21,7 @@ const App = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuth, isUserLoading } = useSelector((state) => state.user);
+  const { isUserAuth, isUserLoading } = useSelector((state) => state.user);
   const feedOrderNumber = location.pathname.match(/\/feed\/(\d+)/)?.[1];
   const profileOrderNumber = location.pathname.match(
     /\/profile\/orders\/(\d+)/
@@ -30,7 +30,7 @@ const App = () => {
     const accessToken = getCookie('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
-    if (accessToken && refreshToken && !isAuth && !isUserLoading) {
+    if (accessToken && refreshToken && !isUserAuth && !isUserLoading) {
       dispatch(fetchUser());
     }
   }, [dispatch]);

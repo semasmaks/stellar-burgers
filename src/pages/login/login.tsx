@@ -11,7 +11,7 @@ export const Login: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuth, isUserLoading } = useSelector((state) => state.user);
+  const { isUserAuth, isUserLoading } = useSelector((state) => state.user);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -28,11 +28,11 @@ export const Login: FC = () => {
   };
 
   useEffect(() => {
-    if (isAuth) {
+    if (isUserAuth) {
       const from = location.state?.from?.pathname || '/';
       navigate(from, { replace: true });
     }
-  }, [isAuth, navigate, location]);
+  }, [isUserAuth, navigate, location]);
 
   if (isUserLoading) return <Preloader />;
 
