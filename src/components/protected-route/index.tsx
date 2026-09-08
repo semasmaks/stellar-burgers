@@ -13,9 +13,11 @@ export const ProtectedRoute = ({
 }: ProtectedRouteProps) => {
   const location = useLocation();
   const isAuth = useSelector((state) => state.user.isUserAuth);
-  if (!isAuth && !onlyUnAuth) {
+
+  if (!isAuth && !onlyUnAuth)
     return <Navigate to={'/login'} state={{ from: location }} replace />;
-  }
+  if (isAuth && onlyUnAuth)
+    return <Navigate to={location.state?.from || '/'} replace />;
 
   return children;
 };

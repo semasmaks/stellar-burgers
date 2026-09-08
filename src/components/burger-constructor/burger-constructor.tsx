@@ -4,9 +4,11 @@ import { useDispatch, useSelector } from '../../services/store';
 import { postOrder, setOrderModalData } from '../../services/slices/orderSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
 import { TIngredient } from '@utils-types';
+import { useNavigate } from 'react-router-dom';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const constructorItems = useSelector((state) => state.constructorSlice);
   const { orderRequest, orderModalData } = useSelector((state) => state.order);
@@ -15,7 +17,7 @@ export const BurgerConstructor: FC = () => {
 
   const onOrderClick = () => {
     if (!constructorItems.bun) setOrderButtonText('Выберите булку');
-    if (!isUserAuth) setOrderButtonText('Необходимо авторизоваться');
+    if (!isUserAuth) navigate('/login', { state: { from: location.pathname } });
     if (!constructorItems.bun || orderRequest || !isUserAuth) return;
     const orderData = [
       constructorItems.bun._id,

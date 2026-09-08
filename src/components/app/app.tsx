@@ -1,11 +1,13 @@
 import {
   ConstructorPage,
   Feed,
+  ForgotPassword,
   Login,
   NotFound404,
   Profile,
   ProfileOrders,
-  Register
+  Register,
+  ResetPassword
 } from '@pages';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import '../../index.css';
@@ -82,9 +84,32 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path='/forgot-password'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <ForgotPassword />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/reset-password'
+            element={
+              <ProtectedRoute onlyUnAuth>
+                <ResetPassword />
+              </ProtectedRoute>
+            }
+          />
           <Route path='/ingredients/:id' element={<IngredientDetails />} />
           <Route path='/feed/:number' element={<OrderInfo />} />
-          <Route path='/profile/orders/:number' element={<OrderInfo />} />
+          <Route
+            path='/profile/orders/:number'
+            element={
+              <ProtectedRoute>
+                <OrderInfo />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         {background && (
           <Routes>
@@ -108,7 +133,9 @@ const App = () => {
               path='/profile/orders/:number'
               element={
                 <Modal title={`#${profileOrderNumber}`} onClose={closeModal}>
-                  <OrderInfo />
+                  <ProtectedRoute>
+                    <OrderInfo />
+                  </ProtectedRoute>
                 </Modal>
               }
             />
