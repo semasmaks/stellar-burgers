@@ -1,6 +1,5 @@
 import { FC, useEffect, useMemo } from 'react';
-import { Preloader } from '@ui';
-import { OrderInfoUI } from '@ui';
+import { OrderInfoUI, Preloader } from '@ui';
 import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
 import { useParams } from 'react-router-dom';
@@ -8,7 +7,6 @@ import {
   getOrderByNumber,
   setSelectedOrder
 } from '../../services/slices/feedSlice';
-import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
@@ -24,9 +22,6 @@ export const OrderInfo: FC = () => {
   }, [dispatch, orderNumber]);
 
   const ingredients = useSelector((state) => state.ingredients.ingredients);
-  useEffect(() => {
-    if (!ingredients.length) dispatch(fetchIngredients());
-  }, [dispatch]);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
