@@ -2,18 +2,20 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getIngredientsApi } from '@api';
 import { TIngredient } from '@utils-types';
 
-interface IFeedSlice {
+interface IIngredientState {
   ingredients: TIngredient[];
   selectedIngredient: TIngredient | null;
+  isIngredientsInited: boolean;
   isIngredientsLoading: boolean;
-  error: string | null;
+  ingredientError: string | null;
 }
 
-const initialState: IFeedSlice = {
+const initialState: IIngredientState = {
   ingredients: [],
   selectedIngredient: null,
+  isIngredientsInited: false,
   isIngredientsLoading: false,
-  error: null
+  ingredientError: null
 };
 
 export const fetchIngredients = createAsyncThunk(
@@ -40,14 +42,16 @@ export const ingredientsSlice = createSlice({
     builder
       .addCase(fetchIngredients.pending, (state) => {
         state.isIngredientsLoading = true;
-        state.error = null;
+        state.ingredientError = null;
       })
       .addCase(fetchIngredients.rejected, (state) => {
         state.isIngredientsLoading = false;
-        state.error = 'Не удалось загрузить список ингредиентов';
+        state.isIngredientsInited = true;
+        state.ingredientError = 'Не удалось загрузить список ингредиентов';
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         state.isIngredientsLoading = false;
+        state.isIngredientsInited = true;
         state.ingredients = action.payload;
       });
   }

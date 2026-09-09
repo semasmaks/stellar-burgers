@@ -1,4 +1,4 @@
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 import { LoginUI } from '@ui-pages';
 import { useDispatch, useSelector } from '../../services/store';
 import { loginUser } from '../../services/slices/userSlice';
@@ -11,34 +11,20 @@ export const Login: FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isUserAuth, isUserLoading } = useSelector((state) => state.user);
+  const { isUserAuth, isUserLoading, userError } = useSelector(
+    (state) => state.user
+  );
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }))
-      .unwrap()
-      .then(() => {
-        if (window.history.length > 1) {
-          navigate(-1);
-        } else {
-          navigate('/', { replace: true });
-        }
-      })
-      .catch((e) => console.warn(e));
+    dispatch(loginUser({ email, password }));
   };
-
-  useEffect(() => {
-    if (isUserAuth) {
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
-    }
-  }, [isUserAuth, navigate, location]);
 
   if (isUserLoading) return <Preloader />;
 
   return (
     <LoginUI
-      errorText=''
+      errorText={userError || ''}
       email={email}
       setEmail={setEmail}
       password={password}

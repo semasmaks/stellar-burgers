@@ -7,7 +7,7 @@ import {
   setSelectedIngredient
 } from '../../services/slices/ingredientsSlice';
 
-export const IngredientDetails: FC = () => {
+export const IngredientDetails: FC<{ isModal?: boolean }> = ({ isModal }) => {
   const { selectedIngredient, ingredients } = useSelector(
     (state) => state.ingredients
   );
@@ -26,5 +26,10 @@ export const IngredientDetails: FC = () => {
     return <Preloader />;
   }
 
-  return <IngredientDetailsUI ingredientData={selectedIngredient} />;
+  return (
+    <IngredientDetailsUI
+      ingredientData={selectedIngredient}
+      isModal={isModal}
+    />
+  );
 };

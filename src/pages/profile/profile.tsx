@@ -8,7 +8,12 @@ import { TRegisterData } from '@api';
 export const Profile: FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.userData);
-  const isUserLoading = useSelector((state) => state.user.isUserLoading);
+  const { isUserLoading, isAuthChecked } = useSelector((state) => state.user);
+
+  const [updateKey, setUpdateKey] = useState(0);
+  const handleUpdate = () => {
+    setUpdateKey((prev) => prev++);
+  };
 
   const [formValue, setFormValue] = useState({
     name: user?.name || '',
@@ -18,13 +23,9 @@ export const Profile: FC = () => {
 
   useEffect(() => {
     if (user) {
-      setFormValue((prevState) => ({
-        ...prevState,
-        name: user?.name || '',
-        email: user?.email || ''
-      }));
+      handleUpdate();
     }
-  }, [user]);
+  }, [user, updateKey]);
 
   const isFormChanged =
     formValue.name !== user?.name ||
@@ -33,21 +34,22 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (isUserLoading) return;
     const newUserData: Partial<TRegisterData> = {};
     if (formValue.name !== user?.name) newUserData.name = formValue.name;
     if (formValue.email !== user?.email) newUserData.email = formValue.email;
     if (formValue.password) newUserData.password = formValue.password;
 
-    dispatch(updateUser(newUserData));
+    dispatch(updateUser(newUserData))
+      .unwrap()
+      .then(() => {
+        handleUpdate();
+      });
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
-    setFormValue({
-      name: user?.name || '',
-      email: user?.email || '',
-      password: ''
-    });
+    handleUpdate();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +59,7 @@ export const Profile: FC = () => {
     }));
   };
 
-  if (isUserLoading) return <Preloader />;
+  if (!isAuthChecked) return <Preloader />;
 
   return (
     <ProfileUI

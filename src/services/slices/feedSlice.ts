@@ -6,8 +6,7 @@ interface IFeedState {
   orders: TOrder[];
   selectedOrder: TOrder | null;
   isFeedLoading: boolean;
-  isInit: boolean;
-  error: string | null;
+  feedError: string | null;
   feed: {
     total: number;
     totalToday: number;
@@ -18,8 +17,7 @@ const initialState: IFeedState = {
   orders: [],
   selectedOrder: null,
   isFeedLoading: false,
-  isInit: false,
-  error: null,
+  feedError: null,
   feed: {
     total: 0,
     totalToday: 0
@@ -52,19 +50,18 @@ export const feedSlice = createSlice({
     builder
       .addCase(fetchOrders.pending, (state) => {
         state.isFeedLoading = true;
-        state.error = null;
+        state.feedError = null;
       })
       .addCase(fetchOrders.rejected, (state) => {
         state.isFeedLoading = false;
-        state.error = 'Не удалось загрузить ленту заказов';
+        state.feedError = 'Не удалось загрузить ленту заказов';
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
         state.isFeedLoading = false;
-        state.error = null;
+        state.feedError = null;
         state.orders = action.payload.orders;
         state.feed.total = action.payload.total;
         state.feed.totalToday = action.payload.totalToday;
-        state.isInit = true;
       })
       .addCase(getOrderByNumber.fulfilled, (state, action) => {
         state.selectedOrder = action.payload;

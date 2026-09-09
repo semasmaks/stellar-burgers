@@ -5,21 +5,24 @@ import { useDispatch, useSelector } from '../../services/store';
 import { fetchOrders } from '../../services/slices/feedSlice';
 
 export const Feed: FC = () => {
-  const { orders, isFeedLoading, error } = useSelector((state) => state.feed);
-  const { isIngredientsLoading } = useSelector((state) => state.ingredients);
   const dispatch = useDispatch();
-
+  const { orders, isFeedLoading, feedError } = useSelector(
+    (state) => state.feed
+  );
+  const { isIngredientsLoading, ingredientError } = useSelector(
+    (state) => state.ingredients
+  );
+  const topPriorityError = feedError || ingredientError || null;
   useEffect(() => {
-    if (!orders.length) dispatch(fetchOrders());
-  }, [dispatch]);
+    dispatch(fetchOrders());
+  }, []);
 
   const handleGetFeeds = useCallback(() => {
     dispatch(fetchOrders());
   }, [dispatch]);
 
-  if (isFeedLoading || isIngredientsLoading || !orders.length)
-    return <Preloader />;
-  if (error) return <div>{error}</div>;
+  if (isFeedLoading || isIngredientsLoading) return <Preloader />;
+  if (topPriorityError) return <div>{topPriorityError}</div>;
 
   return <FeedUI orders={orders} handleGetFeeds={handleGetFeeds} />;
 };

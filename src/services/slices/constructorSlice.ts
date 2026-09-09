@@ -1,14 +1,17 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TIngredient } from '@utils-types';
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit';
+import { TConstructorIngredient, TIngredient } from '@utils-types';
+import { TNewOrder } from '@api';
 
 interface IConstructorState {
   bun: TIngredient | null;
-  ingredients: TIngredient[];
+  ingredients: TConstructorIngredient[];
+  orderModalData: TNewOrder | null;
 }
 
 const initialState: IConstructorState = {
   bun: null,
-  ingredients: []
+  ingredients: [],
+  orderModalData: null
 };
 
 export const constructorSlice = createSlice({
@@ -18,17 +21,32 @@ export const constructorSlice = createSlice({
     setBun: (state, action: PayloadAction<TIngredient | null>) => {
       state.bun = action.payload;
     },
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
-      state.ingredients = [...state.ingredients, action.payload];
+    addIngredient: {
+      reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+        state.ingredients.push(action.payload);
+      },
+      prepare: (ingredient: TIngredient) => ({
+        payload: {
+          ...ingredient,
+          id: nanoid()
+        }
+      })
     },
-    deleteIngredient: (state, action: PayloadAction<{ index: number }>) => {
-      state.ingredients.splice(action.payload.index, 1);
+    deleteIngredient: (state, action: PayloadAction<{ itemId: string }>) => {
+      const indexOfIngredientToDelete = state.ingredients.findIndex(
+        (ingredient) => ingredient.id === action.payload.itemId
+      );
+      state.ingredients.splice(indexOfIngredientToDelete, 1);
     },
     moveIngredient: (
       state,
-      action: PayloadAction<{ index: number; direction: number }>
+      action: PayloadAction<{ itemId: string; direction: number }>
     ) => {
-      const { index, direction } = action.payload;
+      const { itemId, direction } = action.payload;
+      const index = state.ingredients.findIndex(
+        (ingredient) => ingredient.id === itemId
+      );
+      if (index === -1) return;
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= state.ingredients.length) return;
       const [removed] = state.ingredients.splice(index, 1);
@@ -37,6 +55,9 @@ export const constructorSlice = createSlice({
     clearConstructor: (state) => {
       state.bun = null;
       state.ingredients = [];
+    },
+    setOrderModalData: (state, action: PayloadAction<TNewOrder | null>) => {
+      state.orderModalData = action.payload;
     }
   }
 });
@@ -46,5 +67,6 @@ export const {
   addIngredient,
   deleteIngredient,
   moveIngredient,
-  clearConstructor
+  clearConstructor,
+  setOrderModalData
 } = constructorSlice.actions;

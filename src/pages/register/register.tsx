@@ -1,7 +1,7 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { RegisterUI } from '@ui-pages';
-import { useDispatch } from '../../services/store';
-import { regUser } from '../../services/slices/userSlice';
+import { useDispatch, useSelector } from '../../services/store';
+import { registerUser } from '../../services/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 
 export const Register: FC = () => {
@@ -10,11 +10,12 @@ export const Register: FC = () => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { userError } = useSelector((state) => state.user);
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!userName || !email || !password) return;
-    dispatch(regUser({ name: userName, email, password }))
+    dispatch(registerUser({ name: userName, email, password }))
       .unwrap()
       .then(() => {
         if (window.history.length > 1) {
@@ -28,7 +29,7 @@ export const Register: FC = () => {
 
   return (
     <RegisterUI
-      errorText=''
+      errorText={userError || ''}
       email={email}
       userName={userName}
       password={password}

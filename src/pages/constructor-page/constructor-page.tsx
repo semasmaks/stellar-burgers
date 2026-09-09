@@ -7,20 +7,15 @@ import { useDispatch, useSelector } from '../../services/store';
 import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 export const ConstructorPage: FC = () => {
-  const dispatch = useDispatch();
-  const { ingredients, isIngredientsLoading, error } = useSelector(
+  const { ingredients, isIngredientsLoading, ingredientError } = useSelector(
     (state) => state.ingredients
   );
 
-  useEffect(() => {
-    if (!ingredients.length) dispatch(fetchIngredients());
-  }, [dispatch]);
-
   return isIngredientsLoading ? (
     <Preloader />
-  ) : error ? (
+  ) : ingredientError ? (
     <div className={`${styles.error} text text_type_main-medium pt-4`}>
-      {error}
+      {ingredientError}
     </div>
   ) : ingredients.length === 0 ? (
     <div className={`${styles.title} text text_type_main-medium pt-4`}>

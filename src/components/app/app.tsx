@@ -9,32 +9,39 @@ import {
   Register,
   ResetPassword
 } from '@pages';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Route,
+  Routes,
+  useLocation,
+  useMatch,
+  useNavigate
+} from 'react-router-dom';
 import '../../index.css';
 import styles from './app.module.css';
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { useDispatch, useSelector } from '../../services/store';
 import { ProtectedRoute } from '../protected-route';
-import { fetchUser } from '../../services/slices/userSlice';
+import { fetchUser, setAuthChecked } from '../../services/slices/userSlice';
 import { useEffect } from 'react';
 import { getCookie } from '../../utils/cookie';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 
 const App = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const { isUserAuth, isUserLoading } = useSelector((state) => state.user);
-  const feedOrderNumber = location.pathname.match(/\/feed\/(\d+)/)?.[1];
-  const profileOrderNumber = location.pathname.match(
-    /\/profile\/orders\/(\d+)/
-  )?.[1];
+  const feedOrderNumber = useMatch('/feed/:number')?.params.number;
+  const profileOrderNumber = useMatch('/profile/orders/:number')?.params.number;
+  const { isIngredientsInited } = useSelector((state) => state.ingredients);
+
   useEffect(() => {
     const accessToken = getCookie('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
-    if (accessToken && refreshToken && !isUserAuth && !isUserLoading) {
+    if (accessToken && refreshToken) {
       dispatch(fetchUser());
-    }
+    } else dispatch(setAuthChecked());
+    if (!isIngredientsInited) dispatch(fetchIngredients());
   }, [dispatch]);
 
   const background = location.state?.background;
@@ -116,8 +123,8 @@ const App = () => {
             <Route
               path='/ingredients/:id'
               element={
-                <Modal title='Детали ингридиента' onClose={closeModal}>
-                  <IngredientDetails />
+                <Modal title='Детали ингредиента' onClose={closeModal}>
+                  <IngredientDetails isModal />
                 </Modal>
               }
             />
@@ -132,11 +139,11 @@ const App = () => {
             <Route
               path='/profile/orders/:number'
               element={
-                <Modal title={`#${profileOrderNumber}`} onClose={closeModal}>
-                  <ProtectedRoute>
+                <ProtectedRoute>
+                  <Modal title={`#${profileOrderNumber}`} onClose={closeModal}>
                     <OrderInfo />
-                  </ProtectedRoute>
-                </Modal>
+                  </Modal>
+                </ProtectedRoute>
               }
             />
           </Routes>
