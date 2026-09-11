@@ -1,36 +1,69 @@
-import { FC, useMemo } from 'react';
-import { TConstructorIngredient } from '@utils-types';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  clearConstructor,
+  setOrderModalData
+} from '../../services/slices/constructorSlice';
+import { TIngredient } from '@utils-types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { postOrder } from '../../services/slices/userSlice';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const orderRequest = false;
-
-  const orderModalData = null;
+  const { bun, ingredients, orderModalData } = useSelector(
+    (state) => state.burgerConstructor
+  );
+  const constructorItems = { bun, ingredients };
+  const { isUserAuth, orderRequest } = useSelector((state) => state.user);
+  const [orderButtonText, setOrderButtonText] = useState('Оформить заказ');
 
   const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+    if (!constructorItems.bun) setOrderButtonText('Выберите булку');
+    if (!isUserAuth) navigate('/login', { state: { from: location.pathname } });
+    if (!constructorItems.bun || orderRequest || !isUserAuth) return;
+    const ingredientsIds = [
+      constructorItems.bun._id,
+      ...constructorItems.ingredients.map((item) => item._id),
+      constructorItems.bun._id
+    ];
+    setOrderButtonText('Обрабатываем ваш заказ');
+    dispatch(postOrder(ingredientsIds))
+      .unwrap()
+      .then((res) => {
+        dispatch(clearConstructor());
+        setOrderButtonText('Оформить заказ');
+        dispatch(setOrderModalData(res));
+      })
+      .catch((e) => console.warn(e));
   };
-  const closeOrderModal = () => {};
+
+  useEffect(() => {
+    if (constructorItems.bun) setOrderButtonText('Оформить заказ');
+  }, [constructorItems.bun]);
+  useEffect(
+    () => () => {
+      dispatch(setOrderModalData(null));
+    },
+    []
+  );
+
+  const closeOrderModal = () => {
+    dispatch(setOrderModalData(null));
+  };
 
   const price = useMemo(
     () =>
       (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
       constructorItems.ingredients.reduce(
-        (s: number, v: TConstructorIngredient) => s + v.price,
+        (sum: number, ingredient: TIngredient) => sum + ingredient.price,
         0
       ),
     [constructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI
@@ -40,6 +73,7 @@ export const BurgerConstructor: FC = () => {
       orderModalData={orderModalData}
       onOrderClick={onOrderClick}
       closeOrderModal={closeOrderModal}
+      orderButtonText={orderButtonText}
     />
   );
 };

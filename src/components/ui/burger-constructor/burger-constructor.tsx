@@ -16,7 +16,8 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
   price,
   orderModalData,
   onOrderClick,
-  closeOrderModal
+  closeOrderModal,
+  orderButtonText
 }) => (
   <section className={styles.burger_constructor}>
     {constructorItems.bun ? (
@@ -82,7 +83,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         htmlType='button'
         type='primary'
         size='large'
-        children='Оформить заказ'
+        children={orderButtonText}
         onClick={onOrderClick}
       />
     </div>

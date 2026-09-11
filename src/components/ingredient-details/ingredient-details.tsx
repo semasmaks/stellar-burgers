@@ -1,14 +1,35 @@
-import { FC } from 'react';
-import { Preloader } from '../ui/preloader';
-import { IngredientDetailsUI } from '../ui/ingredient-details';
+import { FC, useEffect } from 'react';
+import { IngredientDetailsUI, Preloader } from '@ui';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  fetchIngredients,
+  setSelectedIngredient
+} from '../../services/slices/ingredientsSlice';
 
-export const IngredientDetails: FC = () => {
-  /** TODO: взять переменную из стора */
-  const ingredientData = null;
+export const IngredientDetails: FC<{ isModal?: boolean }> = ({ isModal }) => {
+  const { selectedIngredient, ingredients } = useSelector(
+    (state) => state.ingredients
+  );
 
-  if (!ingredientData) {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  useEffect(() => {
+    if (!ingredients.length) dispatch(fetchIngredients());
+    dispatch(setSelectedIngredient(id!));
+    return () => {
+      dispatch(setSelectedIngredient(null));
+    };
+  }, [dispatch, ingredients.length]);
+
+  if (!selectedIngredient || !ingredients.length) {
     return <Preloader />;
   }
 
-  return <IngredientDetailsUI ingredientData={ingredientData} />;
+  return (
+    <IngredientDetailsUI
+      ingredientData={selectedIngredient}
+      isModal={isModal}
+    />
+  );
 };
