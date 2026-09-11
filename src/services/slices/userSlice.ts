@@ -129,7 +129,7 @@ export const userSlice = createSlice({
         state.isUserLoading = true;
         state.userError = null;
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state) => {
         state.isUserLoading = false;
         state.userError = 'Не верно введены почта или пароль';
       })
@@ -151,6 +151,7 @@ export const userSlice = createSlice({
         state.isUserLoading = false;
         state.isUserAuth = false;
         state.userData = null;
+        state.ordersHistory = [];
       })
       // update
       .addCase(updateUser.pending, (state) => {
@@ -174,7 +175,7 @@ export const userSlice = createSlice({
         state.orderRequest = false;
         state.userError = 'Не удалось обработать заказ';
       })
-      .addCase(postOrder.fulfilled, (state, action) => {
+      .addCase(postOrder.fulfilled, (state) => {
         state.orderRequest = false;
       })
       // userOrders:fetch

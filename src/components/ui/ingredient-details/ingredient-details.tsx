@@ -11,6 +11,9 @@ export const IngredientDetailsUI: FC<IngredientDetailsUIProps> = memo(
       <div
         className={`${styles.content} ${!isModal ? styles.content_center : ''}`}
       >
+        {!isModal && (
+          <h3 className={`text text_type_main-large`}>Детали ингредиента</h3>
+        )}
         <img
           className={styles.img}
           alt='изображение ингредиента.'

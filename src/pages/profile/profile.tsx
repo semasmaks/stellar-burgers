@@ -12,7 +12,7 @@ export const Profile: FC = () => {
 
   const [updateKey, setUpdateKey] = useState(0);
   const handleUpdate = () => {
-    setUpdateKey((prev) => prev++);
+    setUpdateKey((prev) => prev + 1);
   };
 
   const [formValue, setFormValue] = useState({
@@ -23,7 +23,11 @@ export const Profile: FC = () => {
 
   useEffect(() => {
     if (user) {
-      handleUpdate();
+      setFormValue({
+        name: user?.name || '',
+        email: user?.email || '',
+        password: ''
+      });
     }
   }, [user, updateKey]);
 

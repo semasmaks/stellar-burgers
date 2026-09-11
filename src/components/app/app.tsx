@@ -132,7 +132,7 @@ const App = () => {
               path='/feed/:number'
               element={
                 <Modal title={`#${feedOrderNumber}`} onClose={closeModal}>
-                  <OrderInfo />
+                  <OrderInfo isModal />
                 </Modal>
               }
             />
@@ -141,7 +141,7 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <Modal title={`#${profileOrderNumber}`} onClose={closeModal}>
-                    <OrderInfo />
+                    <OrderInfo isModal />
                   </Modal>
                 </ProtectedRoute>
               }

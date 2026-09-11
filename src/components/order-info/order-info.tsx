@@ -8,7 +8,7 @@ import {
   setSelectedOrder
 } from '../../services/slices/feedSlice';
 
-export const OrderInfo: FC = () => {
+export const OrderInfo: FC<{ isModal?: boolean }> = ({ isModal = false }) => {
   const dispatch = useDispatch();
 
   const orderData = useSelector((state) => state.feed.selectedOrder);
@@ -69,5 +69,5 @@ export const OrderInfo: FC = () => {
     return <Preloader />;
   }
 
-  return <OrderInfoUI orderInfo={orderInfo} />;
+  return <OrderInfoUI orderInfo={orderInfo} isModal={isModal} />;
 };

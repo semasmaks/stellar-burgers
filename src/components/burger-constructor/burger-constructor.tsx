@@ -33,9 +33,10 @@ export const BurgerConstructor: FC = () => {
     setOrderButtonText('Обрабатываем ваш заказ');
     dispatch(postOrder(ingredientsIds))
       .unwrap()
-      .then(() => {
+      .then((res) => {
         dispatch(clearConstructor());
         setOrderButtonText('Оформить заказ');
+        dispatch(setOrderModalData(res));
       })
       .catch((e) => console.warn(e));
   };
