@@ -3,12 +3,17 @@ import styles from './ingredient-details.module.css';
 import { IngredientDetailsUIProps } from './type';
 
 export const IngredientDetailsUI: FC<IngredientDetailsUIProps> = memo(
-  ({ ingredientData }) => {
+  ({ ingredientData, isModal = false }) => {
     const { name, image_large, calories, proteins, fat, carbohydrates } =
       ingredientData;
 
     return (
-      <div className={styles.content}>
+      <div
+        className={`${styles.content} ${!isModal ? styles.content_center : ''}`}
+      >
+        {!isModal && (
+          <h3 className={`text text_type_main-large`}>Детали ингредиента</h3>
+        )}
         <img
           className={styles.img}
           alt='изображение ингредиента.'

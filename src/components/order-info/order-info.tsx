@@ -1,21 +1,27 @@
-import { FC, useMemo } from 'react';
-import { Preloader } from '../ui/preloader';
-import { OrderInfoUI } from '../ui/order-info';
+import { FC, useEffect, useMemo } from 'react';
+import { OrderInfoUI, Preloader } from '@ui';
 import { TIngredient } from '@utils-types';
+import { useDispatch, useSelector } from '../../services/store';
+import { useParams } from 'react-router-dom';
+import {
+  getOrderByNumber,
+  setSelectedOrder
+} from '../../services/slices/feedSlice';
 
-export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+export const OrderInfo: FC<{ isModal?: boolean }> = ({ isModal = false }) => {
+  const dispatch = useDispatch();
 
-  const ingredients: TIngredient[] = [];
+  const orderData = useSelector((state) => state.feed.selectedOrder);
+
+  const { number: orderNumber } = useParams();
+  useEffect(() => {
+    dispatch(getOrderByNumber(Number(orderNumber)));
+    return () => {
+      dispatch(setSelectedOrder(null));
+    };
+  }, [dispatch, orderNumber]);
+
+  const ingredients = useSelector((state) => state.ingredients.ingredients);
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {
@@ -63,5 +69,5 @@ export const OrderInfo: FC = () => {
     return <Preloader />;
   }
 
-  return <OrderInfoUI orderInfo={orderInfo} />;
+  return <OrderInfoUI orderInfo={orderInfo} isModal={isModal} />;
 };

@@ -1,26 +1,35 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { Preloader } from '@ui';
+import { updateUser } from '../../services/slices/userSlice';
+import { TRegisterData } from '@api';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.userData);
+  const { isUserLoading, isAuthChecked } = useSelector((state) => state.user);
+
+  const [updateKey, setUpdateKey] = useState(0);
+  const handleUpdate = () => {
+    setUpdateKey((prev) => prev + 1);
   };
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || '',
+    email: user?.email || '',
     password: ''
   });
 
   useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
-  }, [user]);
+    if (user) {
+      setFormValue({
+        name: user?.name || '',
+        email: user?.email || '',
+        password: ''
+      });
+    }
+  }, [user, updateKey]);
 
   const isFormChanged =
     formValue.name !== user?.name ||
@@ -29,15 +38,22 @@ export const Profile: FC = () => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (isUserLoading) return;
+    const newUserData: Partial<TRegisterData> = {};
+    if (formValue.name !== user?.name) newUserData.name = formValue.name;
+    if (formValue.email !== user?.email) newUserData.email = formValue.email;
+    if (formValue.password) newUserData.password = formValue.password;
+
+    dispatch(updateUser(newUserData))
+      .unwrap()
+      .then(() => {
+        handleUpdate();
+      });
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
-    setFormValue({
-      name: user.name,
-      email: user.email,
-      password: ''
-    });
+    handleUpdate();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +62,8 @@ export const Profile: FC = () => {
       [e.target.name]: e.target.value
     }));
   };
+
+  if (!isAuthChecked) return <Preloader />;
 
   return (
     <ProfileUI
@@ -56,6 +74,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

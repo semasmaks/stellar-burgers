@@ -1,9 +1,13 @@
 .wrap {
   margin: 0 auto;
   width: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
 }
 .number {
   text-align: center;
+  align-self: center;
 }
 
 .status {
