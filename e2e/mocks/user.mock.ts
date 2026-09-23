@@ -1,5 +1,4 @@
 import { Page } from '@playwright/test';
-import { setCookie } from '../../src/utils/cookie';
 
 export const mockUser = {
   success: true,
