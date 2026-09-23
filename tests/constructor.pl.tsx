@@ -1,10 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
-import {
-  mockOrder,
-  mockOrderRoute,
-  mockUserRoute,
-  setMockAuthTokens
-} from '../e2e/mocks/user.mock';
+import { mockUserRoute, setMockAuthTokens } from '../e2e/mocks/user.mock';
 
 async function addIngredient(page: Page, name: string) {
   await page
@@ -20,11 +15,17 @@ test.describe('Проверка ui страницы с конструкторо�
       url: '**/api/ingredients',
       update: false
     });
+    await page.routeFromHAR('./e2e/hars/user.har', {
+      url: '**/auth/user',
+      update: false
+    });
+    await page.routeFromHAR('./e2e/hars/orderResponse.har', {
+      url: '**/orders',
+      update: false
+    });
 
-    await mockUserRoute(page);
-    await mockOrderRoute(page);
-    await setMockAuthTokens(page);
-
+    await setMockAuthTokens(page); // для реальной авторизации установить в cookie/localStorage настоящие токены
+    // await mockUserRoute(page) запускаем 1 раз при записи HAR, чтобы мокнуть пользователя с ненастоящими токенами
     await page.goto('/');
   });
 
@@ -122,9 +123,7 @@ test.describe('Проверка ui страницы с конструкторо�
       const modal = page.getByTestId('modal');
 
       await expect(modal).toBeVisible();
-      await expect(
-        modal.getByText(String(mockOrder.order.number))
-      ).toBeVisible();
+      await expect(modal.getByText('5925')).toBeVisible();
 
       await expect(page.getByText('Выберите булки').first()).toBeVisible();
       await expect(page.getByText('Выберите начинку')).toBeVisible();
