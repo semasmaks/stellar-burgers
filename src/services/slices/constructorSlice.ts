@@ -36,6 +36,7 @@ export const constructorSlice = createSlice({
       const indexOfIngredientToDelete = state.ingredients.findIndex(
         (ingredient) => ingredient.id === action.payload.itemId
       );
+      if (indexOfIngredientToDelete === -1) return;
       state.ingredients.splice(indexOfIngredientToDelete, 1);
     },
     moveIngredient: (

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getIngredientsApi } from '@api';
 import { TIngredient } from '@utils-types';
 
-interface IIngredientState {
+export interface IIngredientState {
   ingredients: TIngredient[];
   selectedIngredient: TIngredient | null;
   isIngredientsInited: boolean;
